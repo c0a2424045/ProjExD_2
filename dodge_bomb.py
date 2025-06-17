@@ -32,6 +32,8 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
 def gameover(screen: pg.Surface) -> None:
     """
     docstring：ゲームオーバー時に、半透明の黒い画面上に「Game Over」と表示し,泣いているこうかとん画像を貼り付ける関数
+    引数：screen
+    戻り値：なし
     """
     kkc_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.0)  # こうかとん泣いている
     kkc_rct = kkc_img.get_rect()
@@ -56,6 +58,7 @@ def gameover(screen: pg.Surface) -> None:
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     """
     関数内で加速する段階と画像拡大のリストを作成
+    引数：なし
     戻り値：加速度のリストと拡大爆弾のリスト
     """
     bb_lst = []
@@ -69,7 +72,6 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
 
 
 # def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
-
 
 
 def main():
