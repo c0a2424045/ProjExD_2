@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -28,6 +29,49 @@ def check_bound(rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate  # 横方向、縦方向の画面内判定結果を返す
 
 
+def gameover(screen: pg.Surface) -> None:
+    """
+    docstring：ゲームオーバー時に、半透明の黒い画面上に「Game Over」と表示し,泣いているこうかとん画像を貼り付ける関数
+    """
+    kkc_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.0)  # こうかとん泣いている
+    kkc_rct = kkc_img.get_rect()
+    kkc_rct.center = 757, 261
+    kkc_img2 = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.0)  # こうかとん二匹目
+    kkc_rct2 = kkc_img2.get_rect()
+    kkc_rct2.center = 357, 261
+    bl_img = pg.Surface((1100, 650))  # 空のSurface
+    pg.draw.rect(bl_img, (0, 0, 0), (1100,650,1100,650))  # 暗い画面のRect
+    bl_img.set_alpha(128)  # メソッドで半透明する
+    bl_rct = bl_img.get_rect()
+    fonto = pg.font.Font(None, 80)
+    txt = fonto.render("Game Over",True, (255, 255, 255))
+    screen.blit(txt, [400, 250])
+    screen.blit(kkc_img, kkc_rct)
+    screen.blit(kkc_img2, kkc_rct2)
+    screen.blit(bl_img, bl_rct)
+    pg.display.update()
+    time.sleep(5)  # ５秒間表示
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    関数内で加速する段階と画像拡大のリストを作成
+    戻り値：加速度のリストと拡大爆弾のリスト
+    """
+    bb_lst = []
+    sbb_accs = [a for a in range(1, 11)]
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0,0,0))
+        bb_lst.append(bb_img)
+    return sbb_accs, bb_lst
+
+
+# def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -50,8 +94,11 @@ def main():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bb_rct):  # こうかとんRectと爆弾Rectの衝突判定
-            print("ゲームオーバー")
+            gameover(screen)
             return
+            
+        bb_accs, bb_imgs = init_bb_imgs()
+        bb_img = bb_imgs[min(tmr//500, 9)]  
         screen.blit(bg_img, [0, 0]) 
 
         key_lst = pg.key.get_pressed()
@@ -79,6 +126,7 @@ def main():
         if not tate:  # 縦方向にはみ出ていたら
             vy *= -1
         screen.blit(bb_img, bb_rct)  # 爆弾の描画
+        
         pg.display.update()
         tmr += 1
         clock.tick(50)
